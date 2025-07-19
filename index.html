@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ศาส ส นะ ชาเย็นน</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+            color: #333;
+            overflow: hidden;
+        }
+
+        .game-container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            text-align: center;
+            width: 90%;
+            max-width: 800px;
+            box-sizing: border-box;
+            position: relative;
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #fff;
+            transition: transform 0.5s ease-in-out;
+            transform: translateX(100%);
+            padding: 30px;
+            box-sizing: border-box;
+        }
+
+        .screen.active {
+            transform: translateX(0);
+        }
+
+        #start-screen {
+            transform: translateX(0);
+        }
+        #game-screen, #end-screen {
+            transform: translateX(100%);
+        }
+        #game-screen.active, #end-screen.active {
+            transform: translateX(0);
+        }
+
+        #game-screen {
+            justify-content: flex-start;
+            align-items: center;
+            padding-top: 30px;
+        }
+
+        .score-display {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color: #555;
+            font-weight: bold;
+            width: 100%;
+            text-align: center;
+        }
+
+        .word-controls-wrapper {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            flex-grow: 1;
+            width: 100%;
+            align-items: stretch;
+            margin-top: auto;
+            margin-bottom: auto;
+        }
+
+        .word-display {
+            background-color: #ecf0f1;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: unset;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            flex: 3;
+            word-break: break-word;
+            text-align: center;
+            margin: 0;
+        }
+
+        #current-word {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #34495e;
+            text-transform: uppercase;
+            word-break: break-word;
+            text-align: center;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            gap: 15px;
+            margin-top: 0;
+            justify-content: space-around;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            flex: 0 1 auto;
+            margin: 0;
+        }
+
+        #start-game-btn {
+            background-color: #2ecc71;
+            color: white;
+            padding: 20px 40px;
+            font-size: 1.5em;
+        }
+
+        #start-game-btn:hover {
+            background-color: #27ae60;
+        }
+
+        .left-btn, .right-btn {
+            padding: 30px 20px;
+            font-size: 2em;
+            flex-grow: 1;
+            width: 100%;
+            margin: 0;
+        }
+
+        .left-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .left-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .right-btn {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .right-btn:hover {
+            background-color: #2980b9;
+        }
+
+        #end-screen {
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 100px;
+            padding-bottom: 50px;
+        }
+        
+        #end-screen h2 {
+            font-size: 2.5em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        #end-screen p {
+            font-size: 2em;
+            font-weight: bold;
+            color: #34495e;
+            margin-bottom: 0;
+        }
+
+        .end-screen-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: auto;
+            width: 100%;
+            align-items: center;
+        }
+
+        #restart-game-btn, #reset-all-btn {
+            background-color: #2ecc71;
+            color: white;
+            padding: 20px 40px;
+            font-size: 1.5em;
+            align-self: center;
+            width: 80%;
+            max-width: 350px;
+        }
+
+        #restart-game-btn:hover, #reset-all-btn:hover {
+            background-color: #27ae60;
+        }
+
+        #reset-all-btn {
+            background-color: #f39c12;
+        }
+        #reset-all-btn:hover {
+            background-color: #e67e22;
+        }
+
+        @media (max-width: 600px) {
+            .game-container {
+                padding: 20px;
+                min-height: 90vh;
+                justify-content: space-around;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            #game-screen {
+                padding: 20px;
+            }
+
+            #current-word {
+                font-size: 3.5em;
+            }
+
+            .word-controls-wrapper {
+                flex-direction: column;
+                gap: 15px;
+                margin-top: 15px;
+                margin-bottom: 15px;
+            }
+            .word-display {
+                min-height: 150px;
+                flex: none;
+            }
+            .controls {
+                flex-direction: row;
+                flex: none;
+                gap: 10px;
+                width: 100%;
+            }
+
+            button {
+                padding: 12px 20px;
+                font-size: 1em;
+            }
+
+            .left-btn, .right-btn {
+                padding: 20px 30px;
+                font-size: 1.5em;
+                flex-grow: 1;
+                width: auto;
+            }
+
+            #start-game-btn, #restart-game-btn, #reset-all-btn {
+                padding: 15px 30px;
+                font-size: 1.2em;
+            }
+            
+            #end-screen h2 {
+                font-size: 2em;
+            }
+
+            #end-screen p {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>ทายให้ถูก!</h1>
+
+        <div id="start-screen" class="screen active">
+            <button id="start-game-btn">เริ่มเกม</button>
+        </div>
+
+        <div id="game-screen" class="screen">
+            <div class="score-display">คะแนน: <span id="score">0</span></div>
+            <div class="word-controls-wrapper">
+                <div class="word-display">
+                    <p id="current-word"></p>
+                </div>
+                <div class="controls">
+                    <button id="skip-btn" class="left-btn">ข้าม</button>
+                    <button id="correct-btn" class="right-btn">ถูก!</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="end-screen" class="screen">
+            <h2>หมดตาแกแล้ว !!</h2>
+            <p>คะแนนรวม: <span id="final-score">0</span></p>
+            <div class="end-screen-buttons">
+                <button id="restart-game-btn">คนต่อไป</button>
+                <button id="reset-all-btn">รีเซ็ตเกมทั้งหมด</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const startScreen = document.getElementById('start-screen');
+            const gameScreen = document.getElementById('game-screen');
+            const endScreen = document.getElementById('end-screen');
+
+            const startGameBtn = document.getElementById('start-game-btn');
+            const restartGameBtn = document.getElementById('restart-game-btn');
+            const resetAllBtn = document.getElementById('reset-all-btn');
+            const currentWordDisplay = document.getElementById('current-word');
+            const scoreDisplay = document.getElementById('score');
+            // const timerDisplay = document.getElementById('timer'); // ถูกลบออก
+            const skipBtn = document.getElementById('skip-btn');
+            const correctBtn = document.getElementById('correct-btn');
+            const finalScoreDisplay = document.getElementById('final-score');
+
+            let score = 0;
+            // let timer = 0; // ถูกลบออก
+            // let countdown; // ถูกลบออก
+            
+            let allWords = [
+                { id: "darkhorse", word: "ม้ามืด", difficulty: "normal" },
+                { id: "bookworm", word: "หนอนหนังสือ", difficulty: "normal" },
+                { id: "honey_bear", word: "หมีกินน้ำผึ้ง", difficulty: "normal" },
+                { id: "drowning_puppy", word: "ลูกหมาตกน้ำ", difficulty: "normal" },
+                { id: "many_hearts", word: "หลายใจ", difficulty: "normal" },
+                { id: "honey", word: "น้ำผึ้ง", difficulty: "normal" },
+                { id: "good_night", word: "ราตรีสวัสดิ์", difficulty: "normal" },
+                { id: "hot_temper", word: "ใจร้อน", difficulty: "normal" },
+                { id: "bus_stop", word: "ป้ายรถเมล์", difficulty: "normal" },
+                { id: "tram", word: "รถแทรม", difficulty: "normal" },
+                { id: "mahidol_sithakarn", word: "มหิดลสิทธาคาร", difficulty: "normal" },
+                { id: "mu_lake", word: "MU Lake", difficulty: "normal" },
+                { id: "mlc", word: "MLC", difficulty: "normal" },
+                { id: "canteen", word: "โรงอาหาร", difficulty: "normal" },
+                { id: "carp_fish", word: "ปลาคาร์ฟ", difficulty: "normal" },
+                { id: "president", word: "ประธานาธิบดี", difficulty: "normal" },
+                { id: "samurai_normal", word: "ซามูไร", difficulty: "normal" },
+                { id: "taj_mahal", word: "ทัชมาฮาล", difficulty: "normal" },
+                { id: "mount_fuji", word: "ภูเขาไฟฟูจิ", difficulty: "normal" },
+                { id: "pavilion", word: "ศาลา", difficulty: "normal" },
+                { id: "omelette", word: "ไข่เจียว", difficulty: "normal" },
+                { id: "counterpain", word: "เค้าท์เตอร์เพน", difficulty: "normal" },
+                { id: "encouragement", word: "กำลังใจ", difficulty: "normal" },
+                { id: "buddhist_monk", word: "พระสงฆ์", difficulty: "normal" },
+                { id: "carrot", word: "แคร์รอต", difficulty: "normal" },
+                { id: "thai_tea", word: "ชาไทย", difficulty: "normal" },
+                { id: "orange_cat", word: "แมวส้ม", difficulty: "normal" },
+                { id: "namthong_sikkhalai", word: "น้ำทองสิกขาลัย", difficulty: "normal" },
+                { id: "lotus", word: "โลตัส", difficulty: "normal" },
+                { id: "canteen_again", word: "โรงอาหาร", difficulty: "normal" },
+                { id: "goldfish", word: "ปลาทอง", difficulty: "normal" },
+                { id: "mu_dee", word: "MUดี", difficulty: "normal" },
+                { id: "pineapple", word: "สับปะรด", difficulty: "normal" },
+                { id: "cards", word: "ไพ่", difficulty: "normal" },
+                { id: "india_normal", word: "อินเดีย", difficulty: "normal" },
+                { id: "rubber_duck", word: "เป็ดยาง", difficulty: "normal" },
+                { id: "toothpaste", word: "ยาสีฟัน", difficulty: "normal" },
+                { id: "sneakers", word: "รองเท้าผ้าใบ", difficulty: "normal" },
+                { id: "alarm_clock", word: "นาฬิกาปลุก", difficulty: "normal" },
+                { id: "blanket", word: "ผ้าห่ม", difficulty: "normal" },
+                { id: "shampoo", word: "แชมพู", difficulty: "normal" },
+                { id: "pencil_case", word: "กล่องดินสอ", difficulty: "normal" },
+                { id: "sunflower", word: "ดอกทานตะวัน", difficulty: "normal" },
+                { id: "bubble_tea", word: "ชานมไข่มุก", difficulty: "normal" },
+                { id: "moon", word: "พระจันทร์", difficulty: "normal" },
+                { id: "feather", word: "ขนนก", difficulty: "normal" },
+                { id: "tofu", word: "เต้าหู้", difficulty: "normal" },
+                { id: "cotton_candy", word: "สายไหม", difficulty: "normal" },
+                { id: "broom", word: "ไม้กวาด", difficulty: "normal" },
+                { id: "toilet", word: "ห้องน้ำ", difficulty: "normal" },
+                { id: "glasses", word: "แว่นตา", difficulty: "normal" },
+                { id: "noodle", word: "ก๋วยเตี๋ยว", difficulty: "normal" },
+                { id: "mirror", word: "กระจกเงา", difficulty: "normal" },
+                { id: "fan", word: "พัดลม", difficulty: "normal" },
+                { id: "rocket", word: "จรวด", difficulty: "normal" },
+                
+                { id: "buddha", word: "พระพุทธเจ้า", difficulty: "religious" },
+                { id: "tripitaka_new", word: "พระไตรปิฎก", difficulty: "religious" },
+                { id: "guanyin", word: "เจ้าแม่กวนอิม", difficulty: "religious" },
+                { id: "devadatta", word: "เทวทัต", difficulty: "religious" },
+                { id: "nirvana_new", word: "นิพพาน", difficulty: "religious" },
+                { id: "ananda", word: "อานนท์", difficulty: "religious" },
+                { id: "tang_monk", word: "พระถังซัมจั๋ง", difficulty: "religious" },
+                { id: "sun_wukong", word: "ซุนหงอคง", difficulty: "religious" },
+                { id: "buddhamonthon", word: "พุทธมณฑล", difficulty: "religious" },
+
+                { id: "brahmin", word: "พราหมณ์", difficulty: "religious" },
+                { id: "veda_new", word: "พระเวท", difficulty: "religious" },
+                { id: "sanskrit", word: "สันสกฤต", difficulty: "religious" },
+                { id: "yoga", word: "โยคะ", difficulty: "religious" },
+                { id: "ramakien", word: "รามเกียรติ์", difficulty: "religious" },
+                { id: "phra_ram", word: "พระราม", difficulty: "religious" },
+                { id: "lakshmi", word: "พระแม่ลักษมี", difficulty: "religious" },
+                { id: "ravana", word: "ทศกัณฐ์", difficulty: "religious" },
+                { id: "conch_shell", word: "สังข์", difficulty: "religious" },
+                { id: "ganges_river", word: "แม่น้ำคงคา", difficulty: "religious" },
+                { id: "jesus", word: "พระเยซู", difficulty: "religious" },
+                { id: "moses", word: "โมเสส", difficulty: "religious" },
+                { id: "bible_new", word: "ไบเบิล", difficulty: "religious" },
+                { id: "bread_wine", word: "ขนมปังกับไวน์", difficulty: "religious" },
+                { id: "israel", word: "อิสราเอล", difficulty: "religious" },
+                { id: "jews", word: "ชาวยิว", difficulty: "religious" },
+                { id: "judas", word: "จูดาส", difficulty: "religious" },
+                { id: "scapegoat", word: "แพะรับบาป", difficulty: "religious" },
+                { id: "mary", word: "พระแม่มารีย์", difficulty: "religious" },
+                { id: "red_sea", word: "ทะเลแดง", difficulty: "religious" },
+
+                { id: "quran_new", word: "อัลกุรอาน", difficulty: "religious" },
+                { id: "allah", word: "อัลลอฮฺ", difficulty: "religious" },
+                { id: "prophet_muhammad", word: "นบีมุฮัมมัด", difficulty: "religious" },
+                { id: "adam", word: "อดัม", difficulty: "religious" },
+                { id: "mecca_new", word: "เมกกะ", difficulty: "religious" },
+                { id: "zakat", word: "ซะกาต", difficulty: "religious" },
+                { id: "imam", word: "อิหม่าม", difficulty: "religious" },
+                { id: "salat", word: "ละหมาด", difficulty: "religious" },
+                { id: "sawm", word: "ศีลอด", difficulty: "religious" },
+                { id: "mosque_new", word: "มัสยิด", difficulty: "religious" },
+                { id: "cairo", word: "ไคโร", difficulty: "religious" },
+                { id: "osiris", word: "โอซิริส", difficulty: "religious" },
+                { id: "nile_river", word: "แม่น้ำไนล์", difficulty: "religious" },
+                { id: "pyramid", word: "พีระมิด", difficulty: "religious" },
+                { id: "mummy", word: "มัมมี่", difficulty: "religious" },
+                { id: "suez_canal", word: "คลองสุเอซ", difficulty: "religious" },
+                { id: "sahara_desert", word: "ทะเลทรายสะฮารา", difficulty: "religious" },
+                { id: "pharaoh", word: "ฟาโรห์", difficulty: "religious" },
+                { id: "cleopatra", word: "คลีโอพัตรา", difficulty: "religious" },
+                { id: "mediterranean_sea", word: "ทะเลเมดิเตอร์เรเนียน", difficulty: "religious" },
+
+                { id: "native_americans", word: "ชาวอินเดียนแดง", difficulty: "religious" },
+                { id: "isaac_newton", word: "เซอร์ ไอแซก นิวตัน", difficulty: "religious" },
+                { id: "middle_ages", word: "ยุคกลาง", difficulty: "religious" },
+                { id: "telescope", word: "กล้องโทรทรรศน์", difficulty: "religious" },
+                { id: "horse_carriage", word: "รถม้า", difficulty: "religious" },
+                { id: "aristotle", word: "อริสโตเติล", difficulty: "religious" },
+                { id: "donald_trump", word: "ดอนัลด์ ทรัมป์", difficulty: "religious" },
+                { id: "renaissance", word: "Renaissance", difficulty: "religious" },
+                { id: "galileo_galilei", word: "กาลิเลโอ กาลิเลอี", difficulty: "religious" },
+                { id: "world_war", word: "สงครามโลก", difficulty: "religious" },
+                { id: "hanbok", word: "ฮันบก", difficulty: "religious" },
+                { id: "kimono", word: "กิโมโน", difficulty: "religious" },
+                { id: "qin_shi_huang", word: "จิ๋นซีฮ่องเต้", difficulty: "religious" },
+                { id: "xi_jinping", word: "สี จิ้นผิง", difficulty: "religious" },
+                { id: "great_wall", word: "กำแพงเมืองจีน", difficulty: "religious" },
+                { id: "communism", word: "ลัทธิคอมมิวนิสต์", difficulty: "religious" },
+                { id: "three_kingdoms", word: "สามก๊ก", difficulty: "religious" },
+                { id: "samurai_hard", word: "ซามุไร", difficulty: "religious" },
+                { id: "joseon_dynasty", word: "อาณาจักรโชซ็อน", difficulty: "religious" },
+                { id: "tsunami", word: "สึนามิ", difficulty: "religious" },
+
+                { id: "kinnaree", word: "กินรี", difficulty: "religious" },
+                { id: "ngo_pa", word: "เงาะป่า", difficulty: "religious" },
+                { id: "phra_aphai_mani", word: "พระอภัยมณี", difficulty: "religious" },
+                { id: "pikul_thong", word: "พิกุลทอง", difficulty: "religious" },
+                { id: "nakee", word: "นาคี", difficulty: "religious" },
+                { id: "pla_boo_thong", word: "ปลาบู่ทอง", difficulty: "religious" },
+                { id: "nang_wan_thong", word: "นางวันทอง", difficulty: "religious" },
+                { id: "chalawan", word: "ชาลวัน", difficulty: "religious" },
+                { id: "nang_mekkhala", word: "นางเมขลา", difficulty: "religious" },
+                { id: "phra_in", word: "พระอินทร์", difficulty: "religious" },
+                { id: "krasue", word: "กระสือ", difficulty: "religious" },
+                { id: "phi_ta_khon", word: "ผีตาโขน", difficulty: "religious" },
+                { id: "nang_tanee", word: "นางตานี", difficulty: "religious" },
+                { id: "mae_nak", word: "แม่นาคพระโขนง", difficulty: "religious" },
+                { id: "pret", word: "เปรต", difficulty: "religious" },
+                { id: "ngiu_tree", word: "ต้นงิ้ว", difficulty: "religious" },
+                { id: "yam_ban", word: "ยมบาล", difficulty: "religious" },
+                { id: "zeus", word: "ซุส", difficulty: "religious" },
+                { id: "poseidon", word: "โพไซดอน", difficulty: "religious" },
+                { id: "aphrodite", word: "เทพีอโฟรไดท์", difficulty: "religious" },
+
+                { id: "golf_color", word: "สีกากอล์ฟ", difficulty: "religious" },
+                { id: "tarot_cards", word: "ไพ่ทาโรต์", difficulty: "religious" },
+                { id: "feng_shui", word: "ฮวงจุ้ย", difficulty: "religious" },
+                { id: "bodhi_tree", word: "ต้นโพธิ์", difficulty: "religious" },
+                { id: "enlightened_person", word: "คนตื่นธรรม", difficulty: "religious" },
+                { id: "spirit_house", word: "ศาลพระภูมิ", difficulty: "religious" },
+                { id: "nang_kwak", word: "นางกวัก", difficulty: "religious" },
+                { id: "takhian_spirit", word: "เจ้าแม่ตะเคียน", difficulty: "religious" },
+                { id: "ganesha", word: "พระพิฆเนศ", difficulty: "religious" },
+                { id: "dharmachakra", word: "ธรรมจักร", difficulty: "religious" },
+                { id: "mandala", word: "มณฑล", difficulty: "religious" },
+                { id: "vajrayana", word: "วัชรยาน", difficulty: "religious" },
+                { id: "divine_eye", word: "ตาทิพย์", difficulty: "religious" },
+                { id: "reincarnation", word: "การเวียนว่ายตายเกิด", difficulty: "religious" },
+                { id: "phra_mae_thorani", word: "พระแม่ธรณี", difficulty: "religious" }
+            ];
+
+            let playedWordIds = new Set();
+            let availableNormalWords = [];
+            let availableReligiousWords = [];
+            let currentWordsInRound = [];
+            let currentWordIndex = 0;
+
+            function loadGameState() {
+                const savedScore = localStorage.getItem('gameScore');
+                if (savedScore !== null) {
+                    score = parseInt(savedScore, 10);
+                } else {
+                    score = 0;
+                }
+                scoreDisplay.textContent = score;
+
+                const savedPlayedWordIds = localStorage.getItem('playedWordIds');
+                if (savedPlayedWordIds) {
+                    playedWordIds = new Set(JSON.parse(savedPlayedWordIds));
+                } else {
+                    playedWordIds = new Set();
+                }
+            }
+
+            function saveGameState() {
+                localStorage.setItem('gameScore', score);
+                localStorage.setItem('playedWordIds', JSON.stringify(Array.from(playedWordIds)));
+            }
+
+            function resetAllGameData() {
+                if (confirm("คุณแน่ใจหรือไม่ที่ต้องการรีเซ็ตคะแนนและคำศัพท์ที่เล่นไปทั้งหมด?")) {
+                    localStorage.removeItem('gameScore');
+                    localStorage.removeItem('playedWordIds');
+                    score = 0;
+                    playedWordIds = new Set();
+                    scoreDisplay.textContent = score;
+                    showScreen(startScreen);
+                    alert("เกมถูกรีเซ็ตเรียบร้อยแล้ว!");
+                }
+            }
+
+            function showScreen(screenToShow) {
+                const screens = [startScreen, gameScreen, endScreen];
+                screens.forEach(screen => {
+                    screen.classList.remove('active');
+                });
+                screenToShow.classList.add('active');
+            }
+
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+
+            function generateRoundWords() {
+                availableNormalWords = shuffleArray(allWords.filter(word => word.difficulty === "normal" && !playedWordIds.has(word.id)));
+                availableReligiousWords = shuffleArray(allWords.filter(word => word.difficulty === "religious" && !playedWordIds.has(word.id)));
+                
+                currentWordsInRound = [];
+                let normalCount = 0;
+                let religiousCount = 0;
+
+                while (normalCount < availableNormalWords.length || religiousCount < availableReligiousWords.length) {
+                    for (let i = 0; i < 4; i++) {
+                        if (normalCount < availableNormalWords.length) {
+                            currentWordsInRound.push(availableNormalWords[normalCount]);
+                            normalCount++;
+                        } else {
+                            break;
+                        }
+                    }
+                    if (religiousCount < availableReligiousWords.length) {
+                        currentWordsInRound.push(availableReligiousWords[religiousCount]);
+                        religiousCount++;
+                    } else if (normalCount < availableNormalWords.length) { 
+                        currentWordsInRound.push(availableNormalWords[normalCount]);
+                        normalCount++;
+                    }
+                }
+            }
+
+            function startGame() {
+                // timer = 30; // ถูกลบออก
+                // timerDisplay.textContent = timer; // ถูกลบออก
+                currentWordIndex = 0;
+                
+                loadGameState();
+                generateRoundWords();
+
+                if (currentWordsInRound.length === 0) {
+                    currentWordDisplay.textContent = "ไม่มีคำศัพท์เหลือแล้ว!";
+                    finalScoreDisplay.textContent = score;
+                    showScreen(endScreen);
+                    return;
+                }
+                
+                showScreen(gameScreen);
+                nextWord();
+                // startTimer(); // ถูกลบออก
+            }
+
+            function nextWord() {
+                if (currentWordIndex < currentWordsInRound.length) {
+                    const selectedWord = currentWordsInRound[currentWordIndex];
+                    currentWordDisplay.textContent = selectedWord.word;
+                    currentWordDisplay.dataset.difficulty = selectedWord.difficulty;
+                    currentWordDisplay.dataset.id = selectedWord.id;
+                    currentWordIndex++;
+                } else {
+                    currentWordDisplay.textContent = "หมดคำศัพท์ในรอบนี้!";
+                    // clearInterval(countdown); // ถูกลบออก
+                    endGame();
+                }
+            }
+
+            // ฟังก์ชัน startTimer() ถูกลบออกไปทั้งหมด
+
+            function endGame() {
+                finalScoreDisplay.textContent = score;
+                showScreen(endScreen);
+            }
+
+            function handleCorrectGuess() {
+                const difficulty = currentWordDisplay.dataset.difficulty;
+                const wordId = currentWordDisplay.dataset.id;
+                
+                if (difficulty === "normal") {
+                    score += 5;
+                } else if (difficulty === "religious") {
+                    score += 20;
+                }
+                scoreDisplay.textContent = score;
+                playedWordIds.add(wordId);
+                saveGameState();
+                nextWord();
+            }
+
+            function handleSkip() {
+                // const wordId = currentWordDisplay.dataset.id; // ไม่จำเป็นต้องใช้เมื่อข้าม
+                nextWord();
+            }
+
+            startGameBtn.addEventListener('click', startGame);
+            restartGameBtn.addEventListener('click', startGame);
+            resetAllBtn.addEventListener('click', resetAllGameData);
+            correctBtn.addEventListener('click', handleCorrectGuess);
+            skipBtn.addEventListener('click', handleSkip);
+
+            loadGameState();
+            showScreen(startScreen);
+        });
+    </script>
+</body>
+</html>
