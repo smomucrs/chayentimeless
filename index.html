@@ -14,7 +14,8 @@
             background-color: #f0f0f0;
             margin: 0;
             color: #333;
-            overflow: hidden;
+            overflow: hidden; /* Prevent body scroll if content overflows */
+            position: relative; /* For fixed button to relate to if needed, though fixed is relative to viewport */
         }
 
         .game-container {
@@ -26,54 +27,49 @@
             width: 90%;
             max-width: 800px;
             box-sizing: border-box;
-            position: relative;
-            min-height: 600px;
+            position: relative; /* Relative for screens to position within */
+            min-height: 600px; /* Ensure enough height for content */
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            overflow: hidden;
+            justify-content: flex-start; /* Align content to start for screens */
+            align-items: center;
+            overflow: hidden; /* Hide overflow of screens if they are incorrectly positioned */
         }
 
         h1 {
             color: #2c3e50;
             margin-bottom: 20px;
+            width: 100%; /* Ensure h1 takes full width */
         }
 
         .screen {
-            position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
-            height: 100%;
-            display: flex;
+            height: auto; /* Allow height to adjust to content */
+            display: none; /* Hidden by default */
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background-color: #fff;
-            transition: transform 0.5s ease-in-out;
-            transform: translateX(100%);
-            padding: 30px;
+            padding: 0px; /* Adjusted padding as per new layout */
             box-sizing: border-box;
+            flex-grow: 1; /* Allow screens to take available vertical space */
+            margin-top: auto; /* Push content to center if flex-grow is not enough */
+            margin-bottom: auto; /* Push content to center if flex-grow is not enough */
         }
 
         .screen.active {
-            transform: translateX(0);
+            display: flex; /* Display when active */
         }
 
         #start-screen {
-            transform: translateX(0);
+            padding-top: 50px; /* Add some top padding for start screen */
+            padding-bottom: 50px; /* Add some bottom padding for start screen */
         }
-        #game-screen, #end-screen {
-            transform: translateX(100%);
-        }
-        #game-screen.active, #end-screen.active {
-            transform: translateX(0);
-        }
-
+        
         #game-screen {
             justify-content: flex-start;
             align-items: center;
-            padding-top: 30px;
+            padding-top: 0px; /* Remove top padding as score display is at top */
+            flex-grow: 1;
         }
 
         .score-display {
@@ -89,18 +85,17 @@
             display: flex;
             flex-direction: row;
             gap: 20px;
-            flex-grow: 1;
+            flex-grow: 1; /* Allow this wrapper to take available space */
             width: 100%;
-            align-items: stretch;
-            margin-top: auto;
-            margin-bottom: auto;
+            align-items: stretch; /* Stretch children to fill height */
+            margin-top: auto; /* Push to center vertically */
+            margin-bottom: auto; /* Push to center vertically */
         }
 
         .word-display {
             background-color: #ecf0f1;
             border-radius: 8px;
             padding: 20px;
-            min-height: unset;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -125,7 +120,6 @@
             flex-direction: column;
             flex: 1;
             gap: 15px;
-            margin-top: 0;
             justify-content: space-around;
         }
 
@@ -180,8 +174,9 @@
         #end-screen {
             justify-content: space-between;
             align-items: center;
-            padding-top: 100px;
-            padding-bottom: 50px;
+            padding-top: 50px; /* Adjusted padding */
+            padding-bottom: 50px; /* Adjusted padding */
+            flex-grow: 1;
         }
         
         #end-screen h2 {
@@ -201,12 +196,12 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
-            margin-top: auto;
+            margin-top: auto; /* Pushes buttons to the bottom */
             width: 100%;
             align-items: center;
         }
 
-        #restart-game-btn, #reset-all-btn {
+        #restart-game-btn {
             background-color: #2ecc71;
             color: white;
             padding: 20px 40px;
@@ -216,16 +211,37 @@
             max-width: 350px;
         }
 
-        #restart-game-btn:hover, #reset-all-btn:hover {
+        #restart-game-btn:hover {
             background-color: #27ae60;
         }
 
-        #reset-all-btn {
-            background-color: #f39c12;
+        /* Styling for the always-present reset button */
+        .reset-button-container {
+            position: fixed; /* Fixed position relative to the viewport */
+            bottom: 10px; /* Lower than before */
+            left: 0;
+            right: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding: 0 30px;
+            box-sizing: border-box;
+            z-index: 1000; /* Ensure it's on top of everything */
         }
-        #reset-all-btn:hover {
+
+        #reset-all-btn-global {
+            background-color: #f39c12;
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            width: 80%;
+            max-width: 350px;
+            box-sizing: border-box;
+        }
+        #reset-all-btn-global:hover {
             background-color: #e67e22;
         }
+
 
         @media (max-width: 600px) {
             .game-container {
@@ -239,7 +255,7 @@
             }
 
             #game-screen {
-                padding: 20px;
+                padding: 0px; /* Adjusted padding */
             }
 
             #current-word {
@@ -275,7 +291,7 @@
                 width: auto;
             }
 
-            #start-game-btn, #restart-game-btn, #reset-all-btn {
+            #start-game-btn, #restart-game-btn {
                 padding: 15px 30px;
                 font-size: 1.2em;
             }
@@ -286,6 +302,15 @@
 
             #end-screen p {
                 font-size: 1.8em;
+            }
+
+            .reset-button-container {
+                bottom: 10px; /* Consistent with desktop */
+                padding: 0 20px;
+            }
+            #reset-all-btn-global {
+                padding: 12px 20px;
+                font-size: 1em;
             }
         }
     </style>
@@ -316,9 +341,12 @@
             <p>คะแนนรวม: <span id="final-score">0</span></p>
             <div class="end-screen-buttons">
                 <button id="restart-game-btn">คนต่อไป</button>
-                <button id="reset-all-btn">รีเซ็ตเกมทั้งหมด</button>
             </div>
         </div>
+    </div>
+
+    <div class="reset-button-container">
+        <button id="reset-all-btn-global">รีเซ็ตเกมทั้งหมด</button>
     </div>
 
     <script>
@@ -329,17 +357,14 @@
 
             const startGameBtn = document.getElementById('start-game-btn');
             const restartGameBtn = document.getElementById('restart-game-btn');
-            const resetAllBtn = document.getElementById('reset-all-btn');
+            const resetAllBtnGlobal = document.getElementById('reset-all-btn-global');
             const currentWordDisplay = document.getElementById('current-word');
             const scoreDisplay = document.getElementById('score');
-            // const timerDisplay = document.getElementById('timer'); // ถูกลบออก
             const skipBtn = document.getElementById('skip-btn');
             const correctBtn = document.getElementById('correct-btn');
             const finalScoreDisplay = document.getElementById('final-score');
 
             let score = 0;
-            // let timer = 0; // ถูกลบออก
-            // let countdown; // ถูกลบออก
             
             let allWords = [
                 { id: "darkhorse", word: "ม้ามืด", difficulty: "normal" },
@@ -544,7 +569,8 @@
                     score = 0;
                     playedWordIds = new Set();
                     scoreDisplay.textContent = score;
-                    showScreen(startScreen);
+                    // Ensure we go back to the start screen after reset
+                    showScreen(startScreen); 
                     alert("เกมถูกรีเซ็ตเรียบร้อยแล้ว!");
                 }
             }
@@ -593,8 +619,6 @@
             }
 
             function startGame() {
-                // timer = 30; // ถูกลบออก
-                // timerDisplay.textContent = timer; // ถูกลบออก
                 currentWordIndex = 0;
                 
                 loadGameState();
@@ -609,7 +633,6 @@
                 
                 showScreen(gameScreen);
                 nextWord();
-                // startTimer(); // ถูกลบออก
             }
 
             function nextWord() {
@@ -621,16 +644,8 @@
                     currentWordIndex++;
                 } else {
                     currentWordDisplay.textContent = "หมดคำศัพท์ในรอบนี้!";
-                    // clearInterval(countdown); // ถูกลบออก
                     endGame();
                 }
-            }
-
-            // ฟังก์ชัน startTimer() ถูกลบออกไปทั้งหมด
-
-            function endGame() {
-                finalScoreDisplay.textContent = score;
-                showScreen(endScreen);
             }
 
             function handleCorrectGuess() {
@@ -649,13 +664,12 @@
             }
 
             function handleSkip() {
-                // const wordId = currentWordDisplay.dataset.id; // ไม่จำเป็นต้องใช้เมื่อข้าม
                 nextWord();
             }
 
             startGameBtn.addEventListener('click', startGame);
             restartGameBtn.addEventListener('click', startGame);
-            resetAllBtn.addEventListener('click', resetAllGameData);
+            resetAllBtnGlobal.addEventListener('click', resetAllGameData);
             correctBtn.addEventListener('click', handleCorrectGuess);
             skipBtn.addEventListener('click', handleSkip);
 
